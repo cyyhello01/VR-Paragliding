@@ -7,6 +7,7 @@ using TMPro;
 [RequireComponent(typeof(InputData))]
 public class DisplayInputData : MonoBehaviour
 {
+    public GameObject cam;
     public TextMeshProUGUI leftScoreDisplay;
     public TextMeshProUGUI rightScoreDisplay;
 
@@ -19,6 +20,7 @@ public class DisplayInputData : MonoBehaviour
     void Start()
     {
         inputData= GetComponent<InputData>();
+        //Camera cam1 = cam.GetComponent<Camera>();
     }
 
     // Update is called once per frame
@@ -27,17 +29,26 @@ public class DisplayInputData : MonoBehaviour
         //'deviceVelocity' is the input data we get from left controller, and stored it into vector3
         //device velocity = one of the data inputs
         //can replace it with other data inputs, ex: position, rotation
-        if (inputData.leftController.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 leftVelocity))
+        if (inputData.leftController.TryGetFeatureValue(CommonUsages.deviceVelocity, out Vector3 leftVelocity))
         {
             Debug.Log("left controller is moving");
-            leftMaxScore= Mathf.Max(leftVelocity.magnitude, leftMaxScore); //left velocity larger than left max score?
+            leftMaxScore = Mathf.Max(leftVelocity.magnitude, leftMaxScore); //left velocity larger than left max score? return the largest value
             leftScoreDisplay.text = leftMaxScore.ToString("F2");//second decimal point
+            if (leftVelocity.magnitude > 0)
+            {
+                Debug.Log("move cam position");
+                cam.transform.position += leftVelocity;
+              
+            }
         }
-        if (inputData.rightController.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 rightVelocity))
+        if (inputData.rightController.TryGetFeatureValue(CommonUsages.deviceVelocity, out Vector3 rightVelocity))
         {
             Debug.Log("right controller is moving");
             leftMaxScore = Mathf.Max(rightVelocity.magnitude, rightMaxScore);
             rightScoreDisplay.text = rightMaxScore.ToString("F2");
         }
+
+       
+
     }
 }
